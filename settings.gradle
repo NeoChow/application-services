@@ -9,6 +9,9 @@ project(':fxa-client-library').projectDir = new File("components/fxa-client/andr
 project(':logins-library').projectDir = new File("components/logins/android")
 project(':places-library').projectDir = new File("components/places/android")
 
+include ':ac-log-library'
+project(':ac-log-library').projectDir = new File("components/ac_log/android")
+
 include ':composites-lockbox'
 project(':composites-lockbox').projectDir = new File("composites/lockbox/android")
 
