@@ -744,9 +744,9 @@ fn main() -> Result<()> {
         .get_matches();
 
     let db_path = matches.value_of("database_path").unwrap_or("./new-places.db");
-    let encryption_key = matches.value_of("encryption_key");
+    // let encryption_key = matches.value_of("encryption_key");
 
-    let mut conn = places::PlacesDb::open(&db_path, encryption_key)?;
+    let mut conn = places::PlacesDb::open(&db_path, None)?;
 
     if let Some(import_places_arg) = matches.value_of("import_places") {
         let options = ImportPlacesOptions {
@@ -807,7 +807,7 @@ fn main() -> Result<()> {
     if !matches.is_present("no_interactive") {
         #[cfg(not(windows))] {
             // Can't use cfg! macro, this module doesn't exist at all on windows
-            autocomplete::start_autocomplete(Path::new(db_path).to_owned(), encryption_key)?;
+            autocomplete::start_autocomplete(Path::new(db_path).to_owned(), None)?;
         }
         #[cfg(windows)] {
             println!("The interactive autocomplete demo isn't available on windows currently :(");

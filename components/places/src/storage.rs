@@ -200,6 +200,13 @@ pub fn apply_observation_direct(db: &Connection, visit_ob: VisitObservation) -> 
     if update_frec {
         update_frecency(&db, page_info.row_id, Some(visit_ob.get_redirect_frecency_boost()))?;
     }
+
+    // Trigger insertions for all the new origins of the places we inserted.
+    db.execute("DELETE FROM moz_updateoriginsinsert_temp", &[])?;
+
+    // Trigger frecency updates for all those origins.
+    db.execute("DELETE FROM moz_updateoriginsupdate_temp", &[])?;
+
     Ok(visit_row_id)
 }
 
@@ -563,6 +570,10 @@ pub mod history_sync {
         trace!("Removing local tombstones");
         db.conn().execute_cached("DELETE from moz_places_tombstones", &[])?;
 
+        // Trigger insertions for all the new origins of the places we inserted.
+        db.conn().execute("DELETE FROM moz_updateoriginsinsert_temp", &[])?;
+        // Trigger frecency updates for all those origins.
+        db.conn().execute("DELETE FROM moz_updateoriginsupdate_temp", &[])?;
         Ok(())
     }
 
