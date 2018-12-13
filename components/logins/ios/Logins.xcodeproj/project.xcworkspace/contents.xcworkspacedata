@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/eoger/application-services/components/logins/ios/Logins.xcodeproj">
+      location = "self:Logins.xcodeproj">
    </FileRef>
 </Workspace>

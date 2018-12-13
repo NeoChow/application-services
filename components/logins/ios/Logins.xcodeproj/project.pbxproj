@@ -15,8 +15,6 @@
 		CEE1087620C5ADF9007048AC /* LoginStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE1087520C5ADF9007048AC /* LoginStoreError.swift */; };
 		D5C6DB0020DDBA7C009ACDD2 /* String+Free.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C6DAFF20DDBA7C009ACDD2 /* String+Free.swift */; };
 		D819A4A821B861D6004EE6F3 /* liblogins_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D819A4A721B861D6004EE6F3 /* liblogins_ffi.a */; };
-		D819A4AB21B86384004EE6F3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D819A4A921B86384004EE6F3 /* libssl.a */; };
-		D819A4AD21B87457004EE6F3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D819A4AA21B86384004EE6F3 /* libcrypto.a */; };
 		D819A4AF21B87468004EE6F3 /* libsqlcipher.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D819A4AE21B87467004EE6F3 /* libsqlcipher.a */; };
 /* End PBXBuildFile section */
 
@@ -30,10 +28,8 @@
 		CECB395220B5B77E00DB3ED4 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		CEE1087520C5ADF9007048AC /* LoginStoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginStoreError.swift; sourceTree = "<group>"; };
 		D5C6DAFF20DDBA7C009ACDD2 /* String+Free.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Free.swift"; sourceTree = "<group>"; };
-		D819A4A721B861D6004EE6F3 /* liblogins_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblogins_ffi.a; path = ../../target/universal/release/liblogins_ffi.a; sourceTree = "<group>"; };
-		D819A4A921B86384004EE6F3 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../../libs/ios/universal/openssl/lib/libssl.a; sourceTree = "<group>"; };
-		D819A4AA21B86384004EE6F3 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../libs/ios/universal/openssl/lib/libcrypto.a; sourceTree = "<group>"; };
-		D819A4AE21B87467004EE6F3 /* libsqlcipher.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlcipher.a; path = ../../libs/ios/universal/sqlcipher/lib/libsqlcipher.a; sourceTree = "<group>"; };
+		D819A4A721B861D6004EE6F3 /* liblogins_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblogins_ffi.a; path = ../../../target/universal/release/liblogins_ffi.a; sourceTree = "<group>"; };
+		D819A4AE21B87467004EE6F3 /* libsqlcipher.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlcipher.a; path = ../../../libs/ios/universal/sqlcipher/lib/libsqlcipher.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,8 +38,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D819A4AF21B87468004EE6F3 /* libsqlcipher.a in Frameworks */,
-				D819A4AD21B87457004EE6F3 /* libcrypto.a in Frameworks */,
-				D819A4AB21B86384004EE6F3 /* libssl.a in Frameworks */,
 				D819A4A821B861D6004EE6F3 /* liblogins_ffi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,8 +80,6 @@
 			isa = PBXGroup;
 			children = (
 				D819A4AE21B87467004EE6F3 /* libsqlcipher.a */,
-				D819A4AA21B86384004EE6F3 /* libcrypto.a */,
-				D819A4A921B86384004EE6F3 /* libssl.a */,
 				D819A4A721B861D6004EE6F3 /* liblogins_ffi.a */,
 			);
 			name = Frameworks;
@@ -195,11 +187,11 @@
 			inputPaths = (
 			);
 			outputPaths = (
-				"$(SRCROOT)/../../target/universal/release/liblogins_ffi.a",
+				"$(SRCROOT)/../../../target/universal/release/liblogins_ffi.a",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT\"/../ffi\nenv -i PATH=$PATH OPENSSL_DIR=\"$SRCROOT\"/../../libs/ios/x86_64/openssl/ \\\n\"$HOME\"/.cargo/bin/cargo lipo --release\n";
+			shellScript = "cd \"$SRCROOT\"/../ffi\n# We can't use cargo lipo because we can't link to universal libraries :(\n# https://github.com/rust-lang/rust/issues/55235\nLIBS_ARCHS=(\"i386\" \"x86_64\" \"armv7\" \"arm64\")\nIOS_TRIPLES=(\"i386-apple-ios\" \"x86_64-apple-ios\" \"armv7-apple-ios\" \"aarch64-apple-ios\")\nfor i in \"${!LIBS_ARCHS[@]}\"; do\n    LIB_ARCH=${LIBS_ARCHS[$i]}\n    env -i PATH=$PATH \\\n    OPENSSL_STATIC=1 \\\n    OPENSSL_DIR=\"$SRCROOT\"/../../../libs/ios/$LIB_ARCH/openssl \\\n    SQLCIPHER_LIB_DIR=\"$SRCROOT\"/../../../libs/ios/$LIB_ARCH/sqlcipher/lib \\\n    SQLCIPHER_INCLUDE_DIR=\"$SRCROOT\"/../../../libs/ios/$LIB_ARCH/sqlcipher/include \\\n    \"$HOME\"/.cargo/bin/cargo build --lib --release  --target ${IOS_TRIPLES[$i]}\ndone\nmkdir -p \"$SRCROOT\"/../../../target/universal/release\nlipo -create -output \"$SRCROOT\"/../../../target/universal/release/liblogins_ffi.a \\\n\"$SRCROOT\"/../../../target/i386-apple-ios/release/liblogins_ffi.a \\\n\"$SRCROOT\"/../../../target/x86_64-apple-ios/release/liblogins_ffi.a \\\n\"$SRCROOT\"/../../../target/armv7-apple-ios/release/liblogins_ffi.a \\\n\"$SRCROOT\"/../../../target/aarch64-apple-ios/release/liblogins_ffi.a \\\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -368,9 +360,9 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../../target/universal/release/",
-					"$(PROJECT_DIR)/../../libs/ios/universal/openssl/lib",
-					"$(PROJECT_DIR)/../../libs/ios/universal/sqlcipher/lib",
+					"$(PROJECT_DIR)/../../../target/universal/release/",
+					"$(PROJECT_DIR)/../../../libs/ios/universal/openssl/lib",
+					"$(PROJECT_DIR)/../../../libs/ios/universal/sqlcipher/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.sync15.logins;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -406,7 +398,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../../../../target/universal/release/",
+					"$(PROJECT_DIR)/../../../target/universal/release/",
+					"$(PROJECT_DIR)/../../../libs/ios/universal/sqlcipher/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.sync15.logins;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
