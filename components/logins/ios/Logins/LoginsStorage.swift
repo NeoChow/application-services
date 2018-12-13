@@ -21,7 +21,7 @@ open class SyncUnlockInfo {
 }
 
 // We use a serial queue to protect access to the rust object.
-let queue = DispatchQueue(label: "com.sync15.logins")
+let queue = DispatchQueue(label: "org.mozilla.sync15.logins")
 
 open class LoginsStorage {
     var raw: OpaquePointer? = nil
